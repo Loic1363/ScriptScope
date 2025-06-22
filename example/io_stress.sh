@@ -1,4 +1,7 @@
 #!/bin/bash
-# Simulate disk I/O
-dd if=/dev/zero of=./tempfile bs=1M count=500 oflag=dsync
-rm -f ./tempfile
+
+end=$((SECONDS+60))
+while [ $SECONDS -lt $end ]; do
+    dd if=/dev/zero of=tempfile bs=1M count=100 oflag=dsync 2>/dev/null
+    rm -f tempfile
+done

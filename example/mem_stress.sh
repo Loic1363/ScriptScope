@@ -1,4 +1,9 @@
 #!/bin/bash
-# Simulate RAM usage (100 MB for 60 seconds)
-MEMORY_MB=100
-timeout 60 bash -c "head -c $((MEMORY_MB*1024*1024)) </dev/zero | tail"
+#500Mo for 1m
+end=$((SECONDS+60))
+mem=$(python3 -c "print('a'*500*1024*1024)")
+while [ $SECONDS -lt $end ]; do
+    sleep 1
+done
+unset mem
+

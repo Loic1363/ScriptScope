@@ -1,3 +1,6 @@
 #!/bin/bash
-# Simulate CPU load
-while :; do :; done
+
+end=$((SECONDS+60))
+while [ $SECONDS -lt $end ]; do
+    : 
+done

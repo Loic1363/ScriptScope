@@ -14,7 +14,7 @@ start: test-scripts
 	@echo "Starting ScriptScope in terminal mode..."
 	@./modules/ui.sh
 
-ui: test-scripts
+ui: clean test-scripts
 	@echo "Starting ScriptScope monitor..."
 	@(while true; do ./modules/monitor.sh; sleep 1; done) & \
 	MONITOR_PID=$$!; \
@@ -24,7 +24,7 @@ ui: test-scripts
 	kill $$MONITOR_PID 2>/dev/null || true
 
 clean:
-	@pkill -f cpu_stress.sh || true
-	@pkill -f mem_stress.sh || true
-	@pkill -f io_stress.sh || true
-	@pkill -f sleep_script.sh || true
+	-@pgrep -f cpu_stress.sh | xargs -r kill || true
+	-@pgrep -f mem_stress.sh | xargs -r kill || true
+	-@pgrep -f io_stress.sh | xargs -r kill || true
+	-@pgrep -f sleep_script.sh | xargs -r kill || true

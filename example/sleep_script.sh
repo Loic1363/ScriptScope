@@ -1,3 +1,3 @@
 #!/bin/bash
-# Simulate idle script
-sleep 120
+
+sleep 60
