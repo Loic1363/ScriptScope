@@ -12,17 +12,24 @@ class ScriptScopeMainWindow(QMainWindow):
         # self.setWindowIcon(QIcon("icon.png"))  # Optionnel
 
         self.table = QTableWidget()
-        self.table.setColumnCount(6)
+        self.table.setColumnCount(7)  # 7 colonnes au lieu de 6
         self.table.setHorizontalHeaderLabels(
-            ["Script Name", "PID", "CPU (%)", "MEM (%)", "Elapsed Time", "Command"]
+            ["Script Name", "PID", "CPU (%)", "CPU Total (%)", "MEM (%)", "Elapsed Time", "Command"]
         )
         self.table.setAlternatingRowColors(True)
-        self.table.setColumnWidth(0, 180)
-        self.table.setColumnWidth(1, 80)
-        self.table.setColumnWidth(2, 80)
-        self.table.setColumnWidth(3, 80)
-        self.table.setColumnWidth(4, 120)
-        self.table.setColumnWidth(5, 280)
+        self.table.setColumnWidth(0, 180)   # Script Name
+        self.table.setColumnWidth(1, 80)    # PID
+        self.table.setColumnWidth(2, 80)    # CPU (%)
+        self.table.setColumnWidth(3, 100)   # CPU Total (%)
+        self.table.setColumnWidth(4, 80)    # MEM (%)
+        self.table.setColumnWidth(5, 120)   # Elapsed Time
+        self.table.setColumnWidth(6, 280)   # Command
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.table)
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
 
         layout = QVBoxLayout()
         layout.addWidget(self.table)
@@ -53,7 +60,7 @@ class ScriptScopeMainWindow(QMainWindow):
             item = QTableWidgetItem("Waiting for data...")
             item.setForeground(QColor("#ffcc00"))
             self.table.setItem(0, 0, item)
-            for col in range(1, 6):
+            for col in range(1, 7):
                 self.table.setItem(0, col, QTableWidgetItem(""))
             self.has_shown_waiting = True
             return
@@ -68,19 +75,23 @@ class ScriptScopeMainWindow(QMainWindow):
         for row, entry in enumerate(data):
             self.table.setItem(row, 0, QTableWidgetItem(entry.get("script_name", "")))
             self.table.setItem(row, 1, QTableWidgetItem(str(entry.get("pid", ""))))
-            # Gestion de cpu
+            # CPU par cœur
             cpu_str = entry.get("cpu", "0")
             try:
                 cpu = round(float(cpu_str), 2)
             except ValueError:
                 cpu = 0.0
             self.table.setItem(row, 2, QTableWidgetItem(str(cpu)))
-            # Gestion de mem
+            # CPU total (relatif)
+            cpu_total = round(cpu / os.cpu_count(), 2)
+            self.table.setItem(row, 3, QTableWidgetItem(str(cpu_total)))
+            # Mem
             mem_str = entry.get("mem", "0")
             try:
                 mem = round(float(mem_str), 2)
             except ValueError:
                 mem = 0.0
-            self.table.setItem(row, 3, QTableWidgetItem(str(mem)))
-            self.table.setItem(row, 4, QTableWidgetItem(entry.get("etime", "")))
-            self.table.setItem(row, 5, QTableWidgetItem(entry.get("cmd", "")))
+            self.table.setItem(row, 4, QTableWidgetItem(str(mem)))
+            self.table.setItem(row, 5, QTableWidgetItem(entry.get("etime", "")))
+            self.table.setItem(row, 6, QTableWidgetItem(entry.get("cmd", "")))
+
