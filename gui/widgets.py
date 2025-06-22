@@ -9,7 +9,7 @@ class ScriptScopeMainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("ScriptScope GUI")
         self.resize(900, 500)
-        # self.setWindowIcon(QIcon("icon.png"))
+        # self.setWindowIcon(QIcon("icon.png"))  # Optionnel
 
         self.table = QTableWidget()
         self.table.setColumnCount(6)
@@ -68,9 +68,19 @@ class ScriptScopeMainWindow(QMainWindow):
         for row, entry in enumerate(data):
             self.table.setItem(row, 0, QTableWidgetItem(entry.get("script_name", "")))
             self.table.setItem(row, 1, QTableWidgetItem(str(entry.get("pid", ""))))
-            cpu = round(float(entry.get("cpu", 0)), 2) if entry.get("cpu") else 0.0
+            # Gestion de cpu
+            cpu_str = entry.get("cpu", "0")
+            try:
+                cpu = round(float(cpu_str), 2)
+            except ValueError:
+                cpu = 0.0
             self.table.setItem(row, 2, QTableWidgetItem(str(cpu)))
-            mem = round(float(entry.get("mem", 0)), 2) if entry.get("mem") else 0.0
+            # Gestion de mem
+            mem_str = entry.get("mem", "0")
+            try:
+                mem = round(float(mem_str), 2)
+            except ValueError:
+                mem = 0.0
             self.table.setItem(row, 3, QTableWidgetItem(str(mem)))
             self.table.setItem(row, 4, QTableWidgetItem(entry.get("etime", "")))
             self.table.setItem(row, 5, QTableWidgetItem(entry.get("cmd", "")))
