@@ -1,4 +1,6 @@
-# ScriptScope
+# ScriptScope – in development
+
+⚠️ **This project is currently under active development. Features and interfaces may change. Use with caution!**
 
 **ScriptScope** is a professional, modular monitoring tool for Linux environments. It lets you track, visualize, and analyze the resource consumption (CPU, RAM, I/O, and more) of specific scripts within your projects. Unlike generic system monitors, ScriptScope focuses on user-defined scripts, providing targeted insights to help you optimize and manage your automated workflows.
 
