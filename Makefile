@@ -15,8 +15,13 @@ start: test-scripts
 	@./modules/ui.sh
 
 ui: test-scripts
-	@echo "Starting ScriptScope GUI..."
-	@python3 -m gui.main
+	@echo "Starting ScriptScope monitor..."
+	@(while true; do ./modules/monitor.sh; sleep 1; done) & \
+	MONITOR_PID=$$!; \
+	echo "Starting ScriptScope GUI..."; \
+	python3 -m gui.main; \
+	echo "Stopping monitor..."; \
+	kill $$MONITOR_PID 2>/dev/null || true
 
 clean:
 	@pkill -f cpu_stress.sh || true
