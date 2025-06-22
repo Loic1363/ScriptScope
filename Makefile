@@ -1,7 +1,7 @@
-.PHONY: start clean test-scripts
+.PHONY: start ui test-scripts clean
 
-START_CMD = bin/scriptscope.sh ui
-PID_FILE = .scriptscope.pid
+PYTHON = python3
+GUI_MAIN = gui/main.py
 
 test-scripts:
 	@chmod +x example/*.sh
@@ -11,21 +11,14 @@ test-scripts:
 	@./example/sleep_script.sh &
 
 start: test-scripts
-	@echo "Starting ScriptScope UI..."
-	@echo "Starting ScriptScope UI (interactive mode)..."
-	@$(START_CMD)
-	@echo "ScriptScope started with PID $$(cat $(PID_FILE))"
+	@echo "Starting ScriptScope in terminal mode..."
+	@./modules/ui.sh
+
+ui: test-scripts
+	@echo "Starting ScriptScope GUI..."
+	@python3 -m gui.main
 
 clean:
-	@if [ -f $(PID_FILE) ]; then \
-		PID=$$(cat $(PID_FILE)); \
-		echo "Stopping ScriptScope (PID $$PID)..."; \
-		kill $$PID 2>/dev/null || true; \
-		rm -f $(PID_FILE); \
-		echo "ScriptScope stopped."; \
-	else \
-		echo "No ScriptScope process found."; \
-	fi
 	@pkill -f cpu_stress.sh || true
 	@pkill -f mem_stress.sh || true
 	@pkill -f io_stress.sh || true
