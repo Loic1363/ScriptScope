@@ -6,9 +6,9 @@ CONFIG_FILE="$PROJECT_ROOT/config/scripts.conf"
 OUTPUT_JSON="$PROJECT_ROOT/stats.json"
 
 output_terminal=""
+first=1
 
 echo "[" > "$OUTPUT_JSON"
-first=1
 
 while IFS= read -r script_path; do
   [[ -z "$script_path" ]] && continue
@@ -24,22 +24,19 @@ while IFS= read -r script_path; do
       mem=$(echo "$stats" | awk '{print $3}')
       etime=$(echo "$stats" | awk '{print $4}')
       cmd=$(echo "$stats" | awk '{$1=""; $2=""; $3=""; $4=""; sub(/^ +/, ""); print}')
-
-      output_terminal="${output_terminal}$(printf "%-15s | %-8s | %-8s | %-8s | %-14s | %s\n" \
-      "$script_name" "$pid_val" "$cpu" "$mem" "$etime" "$cmd")"
-
+      output_terminal+=$(printf "%-15s | %-8s | %-8s | %-8s | %-14s | %s\n" \
+        "$script_name" "$pid_val" "$cpu" "$mem" "$etime" "$cmd")
+      cmd_json=$(echo "$cmd" | sed 's/"/\\"/g')
       if [ $first -eq 0 ]; then
         echo "," >> "$OUTPUT_JSON"
       fi
       first=0
-      cmd_json=$(echo "$cmd" | sed 's/"/\\"/g')
       echo "  { \"script_name\": \"$script_name\", \"pid\": \"$pid_val\", \"cpu\": \"$cpu\", \"mem\": \"$mem\", \"etime\": \"$etime\", \"cmd\": \"$cmd_json\" }" >> "$OUTPUT_JSON"
     fi
   done
   if [[ $found -eq 0 ]]; then
     output_terminal+=$(printf "%-15s | %-8s | %-8s | %-8s | %-14s | %s\n" \
       "$script_name" "-" "-" "-" "-" "(not running)")
-
     if [ $first -eq 0 ]; then
       echo "," >> "$OUTPUT_JSON"
     fi
