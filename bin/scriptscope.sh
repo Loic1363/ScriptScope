@@ -1,18 +1,21 @@
 #!/bin/bash
-# scriptscope.sh - Main entrypoint for ScriptScope
+
+# Always resolve the project root, regardless of where the script is called from
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 case "$1" in
   monitor)
-    ../modules/monitor.sh
+    "$PROJECT_ROOT/modules/monitor.sh"
     ;;
   ui)
-    ../modules/ui.sh
+    "$PROJECT_ROOT/modules/ui.sh"
     ;;
   alert)
-    ../modules/alert.sh
+    "$PROJECT_ROOT/modules/alert.sh"
     ;;
   export)
-    ../modules/exporter.sh
+    "$PROJECT_ROOT/modules/exporter.sh"
     ;;
   *)
     echo "Usage: $0 {monitor|ui|alert|export}"
