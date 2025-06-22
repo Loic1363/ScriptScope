@@ -1,9 +1,1 @@
 [
-  { "script_name": "cpu_stress.sh", "pid": "-", "cpu": "-", "mem": "-", "etime": "-", "cmd": "(not running)" }
-  { "script_name": "mem_stress.sh", "pid": "-", "cpu": "-", "mem": "-", "etime": "-", "cmd": "(not running)" }
-,
-  { "script_name": "io_stress.sh", "pid": "-", "cpu": "-", "mem": "-", "etime": "-", "cmd": "(not running)" }
-]
-,
-  { "script_name": "sleep_script.sh", "pid": "-", "cpu": "-", "mem": "-", "etime": "-", "cmd": "(not running)" }
-]
