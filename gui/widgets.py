@@ -1,6 +1,7 @@
 import os
 import json
-from PyQt5.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (QMainWindow, QTableWidget, QTableWidgetItem,
+                            QVBoxLayout, QWidget, QMenuBar, QMenu, QAction)
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor
 
@@ -9,6 +10,9 @@ class ScriptScopeMainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("ScriptScope GUI")
         self.resize(900, 500)
+
+        # Crée la barre de menus
+        self.create_menu_bar()
 
         self.table = QTableWidget()
         self.table.setColumnCount(7)
@@ -39,6 +43,35 @@ class ScriptScopeMainWindow(QMainWindow):
 
         self.refresh_table()
 
+    def create_menu_bar(self):
+        menu_bar = self.menuBar()
+        select_menu = menu_bar.addMenu("Select")
+
+        # Liste des colonnes et de leur index
+        self.column_visibility = {
+            "Script Name": 0,
+            "PID": 1,
+            "CPU (%)": 2,
+            "CPU Total (%)": 3,
+            "MEM (%)": 4,
+            "Elapsed Time": 5,
+            "Command": 6
+        }
+
+        # Ajoute une action pour chaque colonne (case à cocher)
+        self.column_actions = {}
+        for name, col in self.column_visibility.items():
+            action = QAction(name, self, checkable=True, checked=True)
+            action.triggered.connect(lambda checked, c=col: self.toggle_column_visibility(c, checked))
+            select_menu.addAction(action)
+            self.column_actions[col] = action
+
+    def toggle_column_visibility(self, column, visible):
+        if visible:
+            self.table.showColumn(column)
+        else:
+            self.table.hideColumn(column)
+
     def refresh_table(self):
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         stats_path = os.path.join(project_root, "stats.json")
@@ -66,7 +99,9 @@ class ScriptScopeMainWindow(QMainWindow):
     def update_table(self, data):
         self.table.setRowCount(len(data))
         for row, entry in enumerate(data):
+            # Script Name
             self.table.setItem(row, 0, QTableWidgetItem(entry.get("script_name", "")))
+            # PID
             self.table.setItem(row, 1, QTableWidgetItem(str(entry.get("pid", ""))))
             # CPU par cœur
             cpu_str = entry.get("cpu", "0")
@@ -100,4 +135,3 @@ class ScriptScopeMainWindow(QMainWindow):
             # Elapsed Time et Command
             self.table.setItem(row, 5, QTableWidgetItem(entry.get("etime", "")))
             self.table.setItem(row, 6, QTableWidgetItem(entry.get("cmd", "")))
-
