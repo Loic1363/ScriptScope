@@ -1,7 +1,9 @@
 import os
 import json
-from PyQt5.QtWidgets import (QMainWindow, QTableWidget, QTableWidgetItem,
-                            QVBoxLayout, QWidget, QMenuBar, QMenu, QAction)
+from PyQt5.QtWidgets import (
+    QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, 
+    QMenuBar, QMenu, QAction, QPushButton, QLabel, QFileDialog, QHBoxLayout
+)
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor
 
@@ -14,6 +16,29 @@ class ScriptScopeMainWindow(QMainWindow):
         # Crée la barre de menus
         self.create_menu_bar()
 
+        # Layout principal
+        layout = QVBoxLayout()
+
+        # Layout supérieur pour les boutons de sélection
+        top_layout = QHBoxLayout()
+
+        # Bouton pour choisir un dossier
+        self.select_folder_btn = QPushButton("Choisir un dossier")
+        self.select_folder_btn.clicked.connect(self.select_folder)
+        self.folder_label = QLabel("Dossier sélectionné : aucun")
+        top_layout.addWidget(self.select_folder_btn)
+        top_layout.addWidget(self.folder_label)
+
+        # Bouton pour choisir un fichier
+        self.select_file_btn = QPushButton("Choisir un fichier")
+        self.select_file_btn.clicked.connect(self.select_file)
+        self.file_label = QLabel("Fichier sélectionné : aucun")
+        top_layout.addWidget(self.select_file_btn)
+        top_layout.addWidget(self.file_label)
+
+        layout.addLayout(top_layout)
+
+        # Tableau
         self.table = QTableWidget()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(
@@ -27,9 +52,8 @@ class ScriptScopeMainWindow(QMainWindow):
         self.table.setColumnWidth(4, 80)
         self.table.setColumnWidth(5, 120)
         self.table.setColumnWidth(6, 280)
-
-        layout = QVBoxLayout()
         layout.addWidget(self.table)
+
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
@@ -71,6 +95,19 @@ class ScriptScopeMainWindow(QMainWindow):
             self.table.showColumn(column)
         else:
             self.table.hideColumn(column)
+
+    def select_folder(self):
+        folder = QFileDialog.getExistingDirectory(self, "Sélectionner un dossier")
+        if folder:
+            self.folder_label.setText(f"Dossier sélectionné : {folder}")
+
+    def select_file(self):
+        file, _ = QFileDialog.getOpenFileName(
+            self, "Sélectionner un fichier", "",
+            "Tous les fichiers (*);;Scripts (*.sh *.py *.java)"
+        )
+        if file:
+            self.file_label.setText(f"Fichier sélectionné : {file}")
 
     def refresh_table(self):
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -135,3 +172,12 @@ class ScriptScopeMainWindow(QMainWindow):
             # Elapsed Time et Command
             self.table.setItem(row, 5, QTableWidgetItem(entry.get("etime", "")))
             self.table.setItem(row, 6, QTableWidgetItem(entry.get("cmd", "")))
+
+
+if __name__ == "__main__":
+    import sys
+    app = sys.argv[0] if len(sys.argv) > 0 else None
+    app = QApplication(sys.argv)
+    window = ScriptScopeMainWindow()
+    window.show()
+    sys.exit(app.exec_())
