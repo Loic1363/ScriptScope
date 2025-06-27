@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QColor
 
-# === Variables de style centralisées ===
 PRIMARY_COLOR = "#0bda5e"
 DANGER_COLOR = "#fa6238"
 BACKGROUND = "#111418"
@@ -59,7 +58,7 @@ class ScriptScopeMainWindow(QMainWindow):
                 background-color: {BACKGROUND};
                 font-family: {FONT_FAMILY};
             }}
-            QLabel, QTableWidget, QMenuBar, QMenu, QAction {{
+            QLabel, QMenuBar, QMenu, QAction {{
                 font-family: {FONT_FAMILY};
             }}
             QPushButton {{
@@ -75,28 +74,11 @@ class ScriptScopeMainWindow(QMainWindow):
             QPushButton:hover, QPushButton:focus {{
                 background-color: #232a33;
             }}
-            QHeaderView::section {{
-                background-color: #1b2127;
-                color: {TEXT_COLOR};
-                font-weight: bold;
-                border: none;
-                font-size: 15px;
-            }}
-            QTableWidget {{
-                background-color: {BACKGROUND};
-                color: {TEXT_COLOR};
-                border: 1.5px solid {BORDER_COLOR};
-                border-radius: 12px;
-                font-size: 14px;
-            }}
         """)
 
         self.init_column_menu_actions()
 
-        # === Layout principal ===
         main_layout = QVBoxLayout()
-
-        # --- Header ---
         header_layout = QHBoxLayout()
         logo = QLabel("🟦")
         logo.setStyleSheet("font-size: 24px;")
@@ -105,10 +87,7 @@ class ScriptScopeMainWindow(QMainWindow):
         header_layout.addWidget(logo)
         header_layout.addWidget(title)
         header_layout.addStretch()
-
-        # --- Navigation Bar avec bouton Select ---
         nav_layout = QHBoxLayout()
-        # Bouton Select (menu contextuel)
         self.select_nav_btn = QPushButton("Select")
         self.select_nav_btn.setStyleSheet(f"""
             QPushButton {{
@@ -127,28 +106,21 @@ class ScriptScopeMainWindow(QMainWindow):
         self.select_nav_btn.setCursor(Qt.PointingHandCursor)
         self.select_nav_btn.clicked.connect(self.show_select_menu)
         nav_layout.addWidget(self.select_nav_btn)
-
-        # Les autres entrées de navigation
         for label in ["Dashboard", "Scripts", "Paramètres"]:
             nav_btn = QLabel(label)
             nav_btn.setStyleSheet(f"color: {TEXT_COLOR}; font-size: 15px; font-weight: 500; padding: 0 12px;")
             nav_layout.addWidget(nav_btn)
-
         nav_widget = QWidget()
         nav_widget.setLayout(nav_layout)
         header_layout.addWidget(nav_widget)
-
         avatar = QLabel()
         avatar.setFixedSize(40, 40)
         avatar.setStyleSheet(f"border-radius: 20px; background: {BORDER_COLOR};")
         header_layout.addWidget(avatar)
-
         header_widget = QWidget()
         header_widget.setLayout(header_layout)
         header_widget.setStyleSheet("border-bottom: 1.5px solid #283039; padding: 18px 30px;")
         main_layout.addWidget(header_widget)
-
-        # --- Overview ---
         overview_layout = QVBoxLayout()
         overview_title = QLabel("Project Overview")
         overview_title.setStyleSheet(f"color: {TEXT_COLOR}; font-size: 32px; font-weight: bold;")
@@ -159,8 +131,6 @@ class ScriptScopeMainWindow(QMainWindow):
         overview_layout.setSpacing(0)
         overview_layout.setContentsMargins(30, 20, 0, 0)
         main_layout.addLayout(overview_layout)
-
-        # --- Metric Cards ---
         cards_layout = QHBoxLayout()
         cards_layout.setContentsMargins(30, 40, 30, 0)
         cards_layout.setSpacing(25)
@@ -168,13 +138,9 @@ class ScriptScopeMainWindow(QMainWindow):
         cards_layout.addWidget(MetricCard("RAM Usage", "78%", "7 derniers jours", "-2%", DANGER_COLOR))
         cards_layout.addWidget(MetricCard("Scripts actifs", "3", "en cours", "+1", PRIMARY_COLOR))
         main_layout.addLayout(cards_layout)
-
-        # --- Section title ---
         section = QLabel("Performance des scripts")
         section.setStyleSheet(f"color: {TEXT_COLOR}; font-size: 22px; font-weight: bold; margin: 40px 0 10px 30px;")
         main_layout.addWidget(section)
-
-        # --- Sélecteurs dossier/fichier ---
         select_layout = QHBoxLayout()
         select_layout.setContentsMargins(30, 20, 30, 0)
         self.select_folder_btn = QPushButton("Choisir un dossier")
@@ -191,25 +157,55 @@ class ScriptScopeMainWindow(QMainWindow):
         select_layout.addWidget(self.file_label)
         select_layout.addStretch()
         main_layout.addLayout(select_layout)
-
-        # --- Tableau principal ---
         self.table = QTableWidget()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(
             ["Script Name", "PID", "CPU (%)", "CPU Total (%)", "MEM (%)", "Elapsed Time", "Command"]
         )
-        self.table.setAlternatingRowColors(True)
+        self.table.setAlternatingRowColors(False)
         self.table.setMinimumHeight(300)
         for i, w in enumerate([180, 80, 80, 100, 80, 120, 280]):
             self.table.setColumnWidth(i, w)
+        self.table.setStyleSheet("""
+        QTableWidget {
+            background-color: #121416;
+            color: #f3f4f6;
+            border: 1.5px solid #40474f;
+            border-radius: 16px;
+            font-family: Inter, 'Noto Sans', sans-serif;
+            font-size: 15px;
+            gridline-color: #40474f;
+            selection-background-color: #232a33;
+            selection-color: #fff;
+            outline: none;
+        }
+        QHeaderView::section {
+            background-color: #1e2124;
+            color: #fff;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            border-bottom: 2px solid #40474f;
+            padding: 12px 0;
+            letter-spacing: -0.01em;
+        }
+        QTableWidget::item {
+            padding: 18px 16px;
+            border-bottom: 1px solid #40474f;
+        }
+        QTableWidget::item:selected {
+            background-color: #232a33;
+            color: #fff;
+        }
+        QTableCornerButton::section {
+            background-color: #1e2124;
+            border: none;
+        }
+        """)
         main_layout.addWidget(self.table)
-
-        # --- Container central ---
         container = QWidget()
         container.setLayout(main_layout)
         self.setCentralWidget(container)
-
-        # --- Logique métier ---
         self.last_data = []
         self.has_shown_waiting = False
         self.timer = QTimer()
@@ -218,7 +214,6 @@ class ScriptScopeMainWindow(QMainWindow):
         self.refresh_table()
 
     def init_column_menu_actions(self):
-        # Initialisation des actions de colonnes pour le menu contextuel
         self.column_visibility = {
             "Script Name": 0,
             "PID": 1,
@@ -267,7 +262,6 @@ class ScriptScopeMainWindow(QMainWindow):
                 data = json.load(f)
         except Exception:
             data = []
-
         if not data and not self.last_data and not self.has_shown_waiting:
             self.table.setRowCount(1)
             item = QTableWidgetItem("Waiting for data...")
@@ -277,7 +271,6 @@ class ScriptScopeMainWindow(QMainWindow):
                 self.table.setItem(0, col, QTableWidgetItem(""))
             self.has_shown_waiting = True
             return
-
         if data:
             self.last_data = data
             self.has_shown_waiting = False
