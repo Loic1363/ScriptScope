@@ -1,3 +1,15 @@
+"""
+===========================================================================================
+ScriptScope GUI Application
+-------------------------------------------------------------------------------------------
+This module implements the main window for the ScriptScope GUI, a PyQt5-based application
+designed to monitor and display real-time statistics about running scripts. The interface
+provides a table view with customizable columns, periodic data refresh from a JSON file,
+and visual indicators for CPU and memory usage. The code is organized into clearly
+documented sections for maintainability and clarity.
+===========================================================================================
+"""
+
 import os
 import json
 from PyQt5.QtWidgets import (
@@ -101,9 +113,6 @@ class ScriptScopeMainWindow(QMainWindow):
         overview_layout.addWidget(overview_title)
         overview_layout.addWidget(overview_subtitle)
         overview_container.setLayout(overview_layout)
-
-
-
 
         self.table = QTableWidget()
         self.table.setColumnCount(len(self.COLUMNS))
