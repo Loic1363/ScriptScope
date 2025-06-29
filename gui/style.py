@@ -80,7 +80,7 @@ def style_separator(frame):
 def style_title(label):
     label.setStyleSheet("""
         color: #fff;
-        font-size: 22px;
+        font-size: 24px;
         font-family: 'Inter', 'Noto Sans', sans-serif;
         font-weight: bold;
         padding-left: 8px;

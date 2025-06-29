@@ -12,14 +12,19 @@ documented sections for maintainability and clarity.
 
 import os
 import json
+
+from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtGui import QColor
+from PyQt5.QtSvg import QSvgWidget
+
 from PyQt5.QtWidgets import (
     QMainWindow, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget, QHBoxLayout, QPushButton, QLabel, QFrame
 )
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QColor
 
-from .style import apply_table_style, apply_mainwindow_style, style_button, style_title, style_separator, style_overview_title, style_overview_subtitle
+from .style import ( apply_table_style, apply_mainwindow_style, style_button, 
+    style_title, style_separator, style_overview_title, style_overview_subtitle
+)
 
 SHOW_TABLE = False
 
@@ -64,30 +69,50 @@ class ScriptScopeMainWindow(QMainWindow):
         and the table layout.
         ================================================================================
         """
+        svg_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "pictures", "main.svg"))
+
+        logo_widget = QSvgWidget(svg_path)
+        logo_widget.setFixedSize(24, 24)
+
         title = QLabel("ScriptScope")
         style_title(title)
 
+        title_logo_layout = QHBoxLayout()
+        title_logo_layout.setContentsMargins(0, 0, 0, 0)
+        title_logo_layout.setSpacing(8)
+        title_logo_layout.addSpacing(20)
+        title_logo_layout.addWidget(logo_widget)
+        title_logo_layout.addWidget(title)
+        title_logo_widget = QWidget()
+        title_logo_widget.setLayout(title_logo_layout)
+        avatar_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "pictures", "default.svg"))
+        avatar_widget = QSvgWidget(avatar_path)
+        avatar_widget.setFixedSize(32, 32)
+
+
+
         self.select_btn = QPushButton("Select")
         self.dashboard_btn = QPushButton("Dashboard")
-        self.projet_btn = QPushButton("Projet")
+        self.projet_btn = QPushButton("Project")
         self.settings_btn = QPushButton("Settings")
         for btn in [self.select_btn, self.dashboard_btn, self.projet_btn, self.settings_btn]:
             style_button(btn)
 
         top_bar = QHBoxLayout()
-        top_bar.addWidget(title)
+        top_bar.addWidget(title_logo_widget)        
         top_bar.addStretch(1)
         top_bar.addWidget(self.select_btn)
         top_bar.addWidget(self.dashboard_btn)
         top_bar.addWidget(self.projet_btn)
         top_bar.addWidget(self.settings_btn)
+        top_bar.addSpacing(12)  
+        top_bar.addWidget(avatar_widget)
+        top_bar.addSpacing(12)
 
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         separator.setFrameShadow(QFrame.Sunken)
         style_separator(separator)
-
-
 
         overview_container = QWidget()
         overview_container.setFixedWidth(900)
