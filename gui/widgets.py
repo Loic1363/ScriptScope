@@ -24,7 +24,7 @@ from PyQt5.QtWidgets import (
 
 from .style import ( apply_table_style, apply_mainwindow_style, style_button, 
     style_title, style_separator, style_overview_title, style_overview_subtitle,
-    style_metrics_rect
+    style_metrics_rect, style_metrics_title
 )
 
 SHOW_TABLE = False
@@ -151,25 +151,40 @@ class ScriptScopeMainWindow(QMainWindow):
         rect_width = 284
         rect_height = 400
 
+    
+        def create_metrics_rect(title_text):
+            rect = QFrame()
+            rect.setFixedSize(rect_width, rect_height)
+            style_metrics_rect(rect) 
+            rect.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+            vbox = QVBoxLayout()
+            vbox.setContentsMargins(16, 12, 16, 12)  
+            vbox.setSpacing(0)
+
+            title = QLabel(title_text)
+            style_metrics_title(title)
+
+            title.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+            vbox.addWidget(title, alignment=Qt.AlignLeft | Qt.AlignTop)
+            rect.setLayout(vbox)
+            return rect
+
         rectangles_layout = QHBoxLayout()
         rectangles_layout.setContentsMargins(0, 0, 0, 0)
         rectangles_layout.setSpacing(24) 
 
-
-        for _ in range(3):
-            rect = QFrame()
-            rect.setFixedSize(rect_width, rect_height)
-            style_metrics_rect(rect)
-            rect.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        titles = ["CPU Usage", "RAM Usage", "Script Execution Times"]
+        for t in titles:
+            rect = create_metrics_rect(t)
             rectangles_layout.addWidget(rect)
 
         rectangles_container = QWidget()
         rectangles_container.setLayout(rectangles_layout)
-        rectangles_container.setFixedWidth(
-            3 * rect_width + 2 * 24 
-        )
+        rectangles_container.setFixedWidth(3 * rect_width + 2 * 24)
 
         overview_layout.addWidget(rectangles_container, alignment=Qt.AlignLeft)
+        
 
         self.table = QTableWidget()
         self.table.setColumnCount(len(self.COLUMNS))

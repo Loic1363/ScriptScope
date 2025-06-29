@@ -3,7 +3,7 @@
 def apply_mainwindow_style(window):
     window.setStyleSheet("""
         QMainWindow {
-            background-color: #232930;
+            background-color: #1b2027;
             font-family: 'Inter', 'Noto Sans', sans-serif;
         }
     """)
@@ -11,7 +11,7 @@ def apply_mainwindow_style(window):
 def apply_table_style(table):
     table.setStyleSheet("""
         QTableWidget {
-            background-color: #232930;
+            background-color: #1b2027;
             color: #f8f8f2;
             border: 1px solid #3b4754;
             border-radius: 12px;
@@ -41,7 +41,7 @@ def apply_table_style(table):
 def style_button(btn):
     btn.setStyleSheet("""
         QPushButton {
-            background-color: #232930;
+            background-color: #1b2027;
             color: #fff;
             border: none;
             border-radius: 5px;
@@ -102,7 +102,7 @@ def style_overview_subtitle(label):
         color: #919ead;
         font-size: 15px;
         font-family: 'Inter', 'Noto Sans', sans-serif;
-        background: #232930;
+        background: #1b2027;
         border-radius: 8px;
         padding-top: 16px;
         padding-bottom: 16px;
@@ -113,8 +113,20 @@ def style_overview_subtitle(label):
 
 def style_metrics_rect(rect):
     rect.setStyleSheet("""
-        background: #232930;
+        background: #1b2027;
         border-radius: 12px;
         border: 1px solid #3b4754
+    """)
+
+def style_metrics_title(label):
+    label.setStyleSheet("""
+        color: #fff;
+        font-size: 18px;
+        font-weight: normal;
+        background: none;
+        border: none;
+        border-radius: 0;
+        padding-top: 5px;       
+        margin: 0;
     """)
 
