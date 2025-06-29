@@ -18,12 +18,13 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtSvg import QSvgWidget
 
 from PyQt5.QtWidgets import (
-    QMainWindow, QTableWidget, QTableWidgetItem,
+    QMainWindow, QTableWidget, QTableWidgetItem, QSizePolicy, 
     QVBoxLayout, QWidget, QHBoxLayout, QPushButton, QLabel, QFrame
 )
 
 from .style import ( apply_table_style, apply_mainwindow_style, style_button, 
-    style_title, style_separator, style_overview_title, style_overview_subtitle
+    style_title, style_separator, style_overview_title, style_overview_subtitle,
+    style_metrics_rect
 )
 
 SHOW_TABLE = False
@@ -138,6 +139,37 @@ class ScriptScopeMainWindow(QMainWindow):
         overview_layout.addWidget(overview_title)
         overview_layout.addWidget(overview_subtitle)
         overview_container.setLayout(overview_layout)
+        overview_layout.addSpacing(0) 
+
+        metrics_title = QLabel("Performance Metrics")
+        metrics_title.setAlignment(Qt.AlignLeft)
+        style_overview_title(metrics_title)
+        overview_layout.addWidget(metrics_title)
+        overview_layout.addSpacing(18)  
+
+
+        rect_width = 284
+        rect_height = 400
+
+        rectangles_layout = QHBoxLayout()
+        rectangles_layout.setContentsMargins(0, 0, 0, 0)
+        rectangles_layout.setSpacing(24) 
+
+
+        for _ in range(3):
+            rect = QFrame()
+            rect.setFixedSize(rect_width, rect_height)
+            style_metrics_rect(rect)
+            rect.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+            rectangles_layout.addWidget(rect)
+
+        rectangles_container = QWidget()
+        rectangles_container.setLayout(rectangles_layout)
+        rectangles_container.setFixedWidth(
+            3 * rect_width + 2 * 24 
+        )
+
+        overview_layout.addWidget(rectangles_container, alignment=Qt.AlignLeft)
 
         self.table = QTableWidget()
         self.table.setColumnCount(len(self.COLUMNS))

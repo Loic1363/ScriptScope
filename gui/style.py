@@ -108,5 +108,13 @@ def style_overview_subtitle(label):
         padding-bottom: 16px;
         padding-left: 1px;       
         padding-right: 24px;    
-        margin-bottom: 16px;
+        margin-bottom: 4px;
     """)
+
+def style_metrics_rect(rect):
+    rect.setStyleSheet("""
+        background: #232930;
+        border-radius: 12px;
+        border: 1px solid #3b4754
+    """)
+
