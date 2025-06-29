@@ -14,10 +14,16 @@ import os
 import json
 from PyQt5.QtWidgets import (
     QMainWindow, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget, QAction
+    QVBoxLayout, QWidget, QHBoxLayout, QPushButton, QLabel, QFrame
 )
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor
+
+from .style import ( apply_table_style, apply_mainwindow_style, style_button, 
+    style_separator, style_title
+)
+
+SHOW_TABLE = False
 
 class ScriptScopeMainWindow(QMainWindow):
     """
@@ -39,7 +45,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def __init__(self):
         """
         ================================================================================
-        Initialization: Setup window, menu, table, and timer.
+        Initialization: Setup window, UI, and timer.
         ================================================================================
         """
         super().__init__()
@@ -48,40 +54,64 @@ class ScriptScopeMainWindow(QMainWindow):
         self.last_data = []
         self.has_shown_waiting = False
 
-        self._init_menu()
-        self._init_table()
+        self._init_ui()
         self._init_timer()
 
-    def _init_menu(self):
-        """
-        ================================================================================
-        Menu Bar Initialization: Add column visibility toggles.
-        ================================================================================
-        """
-        menu = self.menuBar().addMenu("Select")
-        self.column_actions = {}
-        for idx, (name, _) in enumerate(self.COLUMNS):
-            action = QAction(name, self, checkable=True, checked=True)
-            action.triggered.connect(lambda checked, c=idx: self.toggle_column_visibility(c, checked))
-            menu.addAction(action)
-            self.column_actions[idx] = action
+        apply_mainwindow_style(self)
 
-    def _init_table(self):
+    def _init_ui(self):
         """
         ================================================================================
-        Table Widget Initialization: Setup columns and layout.
+        UI Initialization: Set up the top bar with a title and right-aligned buttons,
+        and the table layout.
         ================================================================================
         """
+        title = QLabel("ScriptScope")
+        style_title(title)
+
+
+        self.select_btn = QPushButton("Select")
+        self.dashboard_btn = QPushButton("Dashboard")
+        self.projet_btn = QPushButton("Projet")
+        self.settings_btn = QPushButton("Settings")
+        for btn in [self.select_btn, self.dashboard_btn, self.projet_btn, self.settings_btn]:
+            style_button(btn)
+
+        top_bar = QHBoxLayout()
+        top_bar.addWidget(title)
+        top_bar.addStretch(1)
+        top_bar.addWidget(self.select_btn)
+        top_bar.addWidget(self.dashboard_btn)
+        top_bar.addWidget(self.projet_btn)
+        top_bar.addWidget(self.settings_btn)
+
+        separator = QFrame()
+        separator.setFrameShape(QFrame.HLine)
+        separator.setFrameShadow(QFrame.Sunken)
+        style_separator(separator)
+
+
         self.table = QTableWidget()
         self.table.setColumnCount(len(self.COLUMNS))
         self.table.setHorizontalHeaderLabels([name for name, _ in self.COLUMNS])
         self.table.setAlternatingRowColors(True)
         for idx, (_, width) in enumerate(self.COLUMNS):
             self.table.setColumnWidth(idx, width)
-        layout = QVBoxLayout()
-        layout.addWidget(self.table)
+        apply_table_style(self.table)
+
+        if not SHOW_TABLE:
+            self.table.hide()
+        else:
+            self.table.show()
+
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(top_bar)
+        main_layout.addWidget(separator) 
+        main_layout.addWidget(self.table)
+        main_layout.addStretch(1)
+
         container = QWidget()
-        container.setLayout(layout)
+        container.setLayout(main_layout)
         self.setCentralWidget(container)
 
     def _init_timer(self):
