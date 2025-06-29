@@ -1,27 +1,13 @@
-"""
-===========================================================================================
-ScriptScope GUI Application
--------------------------------------------------------------------------------------------
-This module implements the main window for the ScriptScope GUI, a PyQt5-based application
-designed to monitor and display real-time statistics about running scripts. The interface
-provides a table view with customizable columns, periodic data refresh from a JSON file,
-and visual indicators for CPU and memory usage. The code is organized into clearly
-documented sections for maintainability and clarity.
-===========================================================================================
-"""
-
 import os
 import json
 from PyQt5.QtWidgets import (
     QMainWindow, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget, QHBoxLayout, QPushButton, QLabel, QFrame
 )
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QColor
 
-from .style import ( apply_table_style, apply_mainwindow_style, style_button, 
-    style_separator, style_title
-)
+from .style import apply_table_style, apply_mainwindow_style, style_button, style_title, style_separator, style_overview_title, style_overview_subtitle
 
 SHOW_TABLE = False
 
@@ -69,7 +55,6 @@ class ScriptScopeMainWindow(QMainWindow):
         title = QLabel("ScriptScope")
         style_title(title)
 
-
         self.select_btn = QPushButton("Select")
         self.dashboard_btn = QPushButton("Dashboard")
         self.projet_btn = QPushButton("Projet")
@@ -91,6 +76,35 @@ class ScriptScopeMainWindow(QMainWindow):
         style_separator(separator)
 
 
+
+        overview_container = QWidget()
+        overview_container.setFixedWidth(900)
+
+        overview_layout = QVBoxLayout()
+        overview_layout.setContentsMargins(0, 0, 0, 0)
+        overview_layout.setSpacing(0)
+
+        overview_title = QLabel("Project Overview")
+        overview_title.setAlignment(Qt.AlignLeft)
+        style_overview_title(overview_title)
+
+        
+        overview_subtitle = QLabel(
+        "A professional, modular Linux application for real-time monitoring and visualization of resource usage by project-specific scripts.\n"
+        "ScriptScope helps developers and teams identify bottlenecks, optimize code, and maintain control over complex workflows."
+        )
+
+        overview_subtitle.setWordWrap(True)
+        overview_subtitle.setAlignment(Qt.AlignLeft)
+        style_overview_subtitle(overview_subtitle)
+
+        overview_layout.addWidget(overview_title)
+        overview_layout.addWidget(overview_subtitle)
+        overview_container.setLayout(overview_layout)
+
+
+
+
         self.table = QTableWidget()
         self.table.setColumnCount(len(self.COLUMNS))
         self.table.setHorizontalHeaderLabels([name for name, _ in self.COLUMNS])
@@ -106,7 +120,8 @@ class ScriptScopeMainWindow(QMainWindow):
 
         main_layout = QVBoxLayout()
         main_layout.addLayout(top_bar)
-        main_layout.addWidget(separator) 
+        main_layout.addWidget(separator)
+        main_layout.addWidget(overview_container, alignment=Qt.AlignHCenter)
         main_layout.addWidget(self.table)
         main_layout.addStretch(1)
 
