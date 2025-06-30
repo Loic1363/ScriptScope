@@ -1,9 +1,9 @@
 [
-  { "script_name": "cpu_stress.sh", "pid": "461158", "cpu": "99.1", "mem": "0.0", "etime": "00:58", "cmd": "/bin/bash ./example/cpu_stress.sh" }
+  { "script_name": "cpu_stress.sh", "pid": "473318", "cpu": "95.3", "mem": "0.0", "etime": "00:04", "cmd": "/bin/bash ./example/cpu_stress.sh" }
 ,
-  { "script_name": "mem_stress.sh", "pid": "461161", "cpu": "6.7", "mem": "3.1", "etime": "00:58", "cmd": "/bin/bash ./example/mem_stress.sh" }
+  { "script_name": "mem_stress.sh", "pid": "473321", "cpu": "76.5", "mem": "3.1", "etime": "00:04", "cmd": "/bin/bash ./example/mem_stress.sh" }
 ,
-  { "script_name": "io_stress.sh", "pid": "461163", "cpu": "0.0", "mem": "0.0", "etime": "00:58", "cmd": "/bin/bash ./example/io_stress.sh" }
+  { "script_name": "io_stress.sh", "pid": "473323", "cpu": "0.0", "mem": "0.0", "etime": "00:05", "cmd": "/bin/bash ./example/io_stress.sh" }
 ,
-  { "script_name": "sleep_script.sh", "pid": "-", "cpu": "-", "mem": "-", "etime": "-", "cmd": "(not running)" }
+  { "script_name": "sleep_script.sh", "pid": "473328", "cpu": "0.0", "mem": "0.0", "etime": "00:05", "cmd": "/bin/bash ./example/sleep_script.sh" }
 ]
