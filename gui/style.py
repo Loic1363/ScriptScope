@@ -1,4 +1,16 @@
 # style.py
+from PyQt5.QtCore import Qt
+
+def style_script_label(label):
+    label.setFixedWidth(100)
+    label.setAlignment(Qt.AlignLeft)
+    label.setStyleSheet("""
+        color: #919ead;
+        margin: 0;
+        padding: 0;
+        border: none;
+    """)
+    label.setToolTip(label.text())
 
 def apply_mainwindow_style(window):
     window.setStyleSheet("""
@@ -129,4 +141,31 @@ def style_metrics_title(label):
         padding-top: 5px;       
         margin: 0;
     """)
+
+def style_script_label(label):
+    label.setFixedWidth(100)  
+    label.setAlignment(Qt.AlignLeft) 
+    label.setStyleSheet("""
+        color: #919ead;
+        margin: 0;
+        padding: 0;
+        border: none;
+    """)
+    label.setToolTip(label.text())  
+
+
+def style_script_progress_bar(bar):
+    bar.setStyleSheet("""
+        QProgressBar {
+            border: 1px solid #3b4754;
+            border-radius: 4px;
+            background: #1b2027;
+            height: 12px;
+        }
+        QProgressBar::chunk {
+            background: #919ead;
+            border-radius: 4px;
+        }
+    """)
+
 
