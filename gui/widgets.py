@@ -157,7 +157,7 @@ class ScriptScopeMainWindow(QMainWindow):
             rect.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
             vbox = QVBoxLayout()
-            vbox.setContentsMargins(16, 12, 16, 12)
+            vbox.setContentsMargins(16, 0, 16, 24)
             vbox.setSpacing(0)
 
             title = QLabel(title_text)
@@ -166,15 +166,22 @@ class ScriptScopeMainWindow(QMainWindow):
             vbox.addWidget(title, alignment=Qt.AlignLeft | Qt.AlignTop)
 
             if title_text == "Script Execution Times":
-                self.scripts_rect = rect
-                self.scripts_layout = vbox
-                if hasattr(self, 'avg_time_label') and self.avg_time_label:
-                    self.avg_time_label.deleteLater()
                 self.avg_time_label = QLabel("Average time: N/A")
                 style_avg_time_label(self.avg_time_label)
                 vbox.addWidget(self.avg_time_label)
-                self._update_scripts_rect()
 
+                self.scripts_bar_container = QWidget()
+                self.scripts_bar_layout = QVBoxLayout()
+                self.scripts_bar_layout.setContentsMargins(0, 0, 0, 200)
+                self.scripts_bar_layout.setSpacing(2)
+                self.scripts_bar_container.setLayout(self.scripts_bar_layout)
+                
+                vbox.addWidget(self.scripts_bar_container, alignment=Qt.AlignTop)
+                self.scripts_bar_container.setStyleSheet("border: none; background: transparent;")
+
+                self.scripts_rect = rect
+                self.scripts_layout = vbox
+                self._update_scripts_rect()
 
             rect.setLayout(vbox)
             return rect
@@ -277,8 +284,8 @@ class ScriptScopeMainWindow(QMainWindow):
         Each bar represents the script execution time, normalized to the maximum time.
         ================================================================================
         """
-        while self.scripts_layout.count() > 2:  # On garde le titre et le label du temps moyen
-            item = self.scripts_layout.takeAt(2)
+        while self.scripts_bar_layout.count():
+            item = self.scripts_bar_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
             elif item.layout():
@@ -295,15 +302,15 @@ class ScriptScopeMainWindow(QMainWindow):
         if not scripts_with_times:
             label = QLabel("No running scripts")
             style_no_scripts_label(label)
-            self.scripts_layout.addWidget(label)
+            self.scripts_bar_layout.addWidget(label)
         else:
             max_time = max(t for _, t in scripts_with_times) if scripts_with_times else 1
             if max_time == 0:
                 max_time = 1
             for name, time_sec in scripts_with_times:
                 hbox = QHBoxLayout()
-                hbox.setContentsMargins(0, 2, 0, 2)
-                hbox.setSpacing(8)
+                hbox.setContentsMargins(0, 2, 0, 2) #espace entre chaque barre
+                hbox.setSpacing(20) #taille de la barre
 
                 label_name = QLabel(name)
                 style_script_label(label_name)
@@ -316,9 +323,8 @@ class ScriptScopeMainWindow(QMainWindow):
                 style_script_progress_bar(bar)
                 hbox.addWidget(bar, stretch=1)
 
-                self.scripts_layout.addLayout(hbox)
+                self.scripts_bar_layout.addLayout(hbox)
 
-        # Mise à jour du texte du label du temps moyen (qui est déjà dans le layout)
         if hasattr(self, 'avg_time_label') and self.avg_time_label is not None:
             if scripts_with_times:
                 avg_time_ms = sum(t * 1000 for _, t in scripts_with_times) / len(scripts_with_times)
