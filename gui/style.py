@@ -175,4 +175,12 @@ def style_no_scripts_label(label):
         margin: 0;
         padding: 0;
     """)
-
+    
+def style_avg_time_label(label):
+    label.setStyleSheet("""
+        color: #919ead;
+        font: 10pt;
+        margin: 8px 0 0 0;
+        padding: 0;
+        border: none;
+    """)

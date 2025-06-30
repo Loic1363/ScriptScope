@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import (
 from .style import (
     apply_table_style, apply_mainwindow_style, style_button,
     style_title, style_separator, style_overview_title, style_overview_subtitle,
-    style_metrics_rect, style_metrics_title,
+    style_metrics_rect, style_metrics_title, style_avg_time_label,
     style_script_label, style_script_progress_bar, style_no_scripts_label
 )
 
@@ -168,7 +168,13 @@ class ScriptScopeMainWindow(QMainWindow):
             if title_text == "Script Execution Times":
                 self.scripts_rect = rect
                 self.scripts_layout = vbox
+                if hasattr(self, 'avg_time_label') and self.avg_time_label:
+                    self.avg_time_label.deleteLater()
+                self.avg_time_label = QLabel("Average time: N/A")
+                style_avg_time_label(self.avg_time_label)
+                vbox.addWidget(self.avg_time_label)
                 self._update_scripts_rect()
+
 
             rect.setLayout(vbox)
             return rect
@@ -264,35 +270,6 @@ class ScriptScopeMainWindow(QMainWindow):
             if self.scripts_rect and self.scripts_layout:
                 self._update_scripts_rect()
 
-    def update_table(self, data):
-        """
-        ================================================================================
-        Update table rows from loaded data.
-        ================================================================================
-        """
-        self.table.setRowCount(len(data))
-        for row, entry in enumerate(data):
-            self.table.setItem(row, 0, QTableWidgetItem(entry.get("script_name", "")))
-            self.table.setItem(row, 1, QTableWidgetItem(str(entry.get("pid", ""))))
-
-            cpu = self._safe_float(entry.get("cpu", "0"))
-            cpu_item = QTableWidgetItem(f"{cpu:.2f}")
-            cpu_item.setForeground(QColor("red") if cpu >= 10 else QColor("green"))
-            self.table.setItem(row, 2, cpu_item)
-
-            cpu_total = self._safe_div(cpu, os.cpu_count())
-            cpu_total_item = QTableWidgetItem(f"{cpu_total:.2f}")
-            cpu_total_item.setForeground(QColor("red") if cpu_total >= 10 else QColor("green"))
-            self.table.setItem(row, 3, cpu_total_item)
-
-            mem = self._safe_float(entry.get("mem", "0"))
-            mem_item = QTableWidgetItem(f"{mem:.2f}")
-            mem_item.setForeground(QColor("red") if mem >= 10 else QColor("green"))
-            self.table.setItem(row, 4, mem_item)
-
-            self.table.setItem(row, 5, QTableWidgetItem(entry.get("etime", "")))
-            self.table.setItem(row, 6, QTableWidgetItem(entry.get("cmd", "")))
-
     def _update_scripts_rect(self):
         """
         ================================================================================
@@ -300,8 +277,8 @@ class ScriptScopeMainWindow(QMainWindow):
         Each bar represents the script execution time, normalized to the maximum time.
         ================================================================================
         """
-        while self.scripts_layout.count() > 1:
-            item = self.scripts_layout.takeAt(1)
+        while self.scripts_layout.count() > 2:  # On garde le titre et le label du temps moyen
+            item = self.scripts_layout.takeAt(2)
             if item.widget():
                 item.widget().deleteLater()
             elif item.layout():
@@ -340,6 +317,48 @@ class ScriptScopeMainWindow(QMainWindow):
                 hbox.addWidget(bar, stretch=1)
 
                 self.scripts_layout.addLayout(hbox)
+
+        # Mise à jour du texte du label du temps moyen (qui est déjà dans le layout)
+        if hasattr(self, 'avg_time_label') and self.avg_time_label is not None:
+            if scripts_with_times:
+                avg_time_ms = sum(t * 1000 for _, t in scripts_with_times) / len(scripts_with_times)
+                if avg_time_ms >= 10000:
+                    avg_time_str = f"{avg_time_ms / 1000:.1f}s"
+                else:
+                    avg_time_str = f"{avg_time_ms:.0f}ms"
+                self.avg_time_label.setText(f"Average time: {avg_time_str}")
+            else:
+                self.avg_time_label.setText("Average time: N/A")
+
+
+    def update_table(self, data):
+        """
+        ================================================================================
+        Update table rows from loaded data.
+        ================================================================================
+        """
+        self.table.setRowCount(len(data))
+        for row, entry in enumerate(data):
+            self.table.setItem(row, 0, QTableWidgetItem(entry.get("script_name", "")))
+            self.table.setItem(row, 1, QTableWidgetItem(str(entry.get("pid", ""))))
+
+            cpu = self._safe_float(entry.get("cpu", "0"))
+            cpu_item = QTableWidgetItem(f"{cpu:.2f}")
+            cpu_item.setForeground(QColor("red") if cpu >= 10 else QColor("green"))
+            self.table.setItem(row, 2, cpu_item)
+
+            cpu_total = self._safe_div(cpu, os.cpu_count())
+            cpu_total_item = QTableWidgetItem(f"{cpu_total:.2f}")
+            cpu_total_item.setForeground(QColor("red") if cpu_total >= 10 else QColor("green"))
+            self.table.setItem(row, 3, cpu_total_item)
+
+            mem = self._safe_float(entry.get("mem", "0"))
+            mem_item = QTableWidgetItem(f"{mem:.2f}")
+            mem_item.setForeground(QColor("red") if mem >= 10 else QColor("green"))
+            self.table.setItem(row, 4, mem_item)
+
+            self.table.setItem(row, 5, QTableWidgetItem(entry.get("etime", "")))
+            self.table.setItem(row, 6, QTableWidgetItem(entry.get("cmd", "")))
 
     def _clear_layout(self, layout):
         """
