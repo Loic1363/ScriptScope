@@ -26,16 +26,15 @@ from PyQt5.QtWidgets import (
 from .style import (
     apply_table_style, apply_mainwindow_style, style_button,
     style_title, style_separator, style_overview_title, style_overview_subtitle,
-    style_metrics_rect, style_metrics_title, style_script_label, style_script_progress_bar
+    style_metrics_rect, style_metrics_title,
+    style_script_label, style_script_progress_bar, style_no_scripts_label
 )
 
 SHOW_TABLE = False
 
-
 class ScriptScopeMainWindow(QMainWindow):
     """
     ================================================================================
-    ScriptScopeMainWindow Class Definition
     Main window for the ScriptScope GUI application.
     ================================================================================
     """
@@ -50,18 +49,12 @@ class ScriptScopeMainWindow(QMainWindow):
     ]
 
     def __init__(self):
-        """
-        ================================================================================
-        Initialization: Setup window, UI, and timer.
-        ================================================================================
-        """
         super().__init__()
         self.setWindowTitle("ScriptScope GUI")
         self.resize(900, 500)
         self.last_data = []
         self.has_shown_waiting = False
 
-        # References for dynamic updates
         self.scripts_rect = None
         self.scripts_layout = None
 
@@ -73,8 +66,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def _init_ui(self):
         """
         ================================================================================
-        UI Initialization: Set up the top bar with a title and right-aligned buttons,
-        and the table layout.
+        Initialize the main UI components.
         ================================================================================
         """
         svg_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "pictures", "main.svg"))
@@ -156,7 +148,7 @@ class ScriptScopeMainWindow(QMainWindow):
         def create_metrics_rect(title_text):
             """
             ================================================================================
-            Helper Function: Creates a styled metrics rectangle with a title.
+            Helper function: creates a styled metrics rectangle with a title.
             ================================================================================
             """
             rect = QFrame()
@@ -173,18 +165,10 @@ class ScriptScopeMainWindow(QMainWindow):
             title.setAlignment(Qt.AlignLeft | Qt.AlignTop)
             vbox.addWidget(title, alignment=Qt.AlignLeft | Qt.AlignTop)
 
-            # ================================================================================
-            # Phase de test
-            # ================================================================================
             if title_text == "Script Execution Times":
-                # Store references for dynamic updates
                 self.scripts_rect = rect
                 self.scripts_layout = vbox
-                # Initialize content
                 self._update_scripts_rect()
-            # ================================================================================
-            # End of phase de test
-            # ================================================================================
 
             rect.setLayout(vbox)
             return rect
@@ -231,7 +215,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def _init_timer(self):
         """
         ================================================================================
-        Timer Initialization: Periodically refresh table data.
+        Initialize the timer for periodic data refresh.
         ================================================================================
         """
         self.timer = QTimer()
@@ -242,7 +226,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def toggle_column_visibility(self, column, visible):
         """
         ================================================================================
-        Toggle Column Visibility: Show or hide table columns.
+        Toggle the visibility of a table column.
         ================================================================================
         """
         (self.table.showColumn if visible else self.table.hideColumn)(column)
@@ -250,7 +234,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def refresh_table(self):
         """
         ================================================================================
-        Table Refresh: Load data from stats.json and update table and metrics rectangle.
+        Refresh table data from stats.json and update the metrics rectangle.
         ================================================================================
         """
         stats_path = os.path.join(
@@ -283,7 +267,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def update_table(self, data):
         """
         ================================================================================
-        Update Table: Populate table rows from loaded data.
+        Update table rows from loaded data.
         ================================================================================
         """
         self.table.setRowCount(len(data))
@@ -312,11 +296,10 @@ class ScriptScopeMainWindow(QMainWindow):
     def _update_scripts_rect(self):
         """
         ================================================================================
-        Update the "Script Execution Times" rectangle content with a list of scripts and
-        horizontal bars proportional to their elapsed times.
+        Update the "Script Execution Times" rectangle with scripts and progress bars.
+        Each bar represents the script execution time, normalized to the maximum time.
         ================================================================================
         """
-        # Clear previous widgets/layouts from the scripts_layout except the title (index 0)
         while self.scripts_layout.count() > 1:
             item = self.scripts_layout.takeAt(1)
             if item.widget():
@@ -334,16 +317,12 @@ class ScriptScopeMainWindow(QMainWindow):
 
         if not scripts_with_times:
             label = QLabel("No running scripts")
-            label.setStyleSheet("""
-                color: #97a5b4;
-                border: none;
-                margin: 0;
-                padding: 0;
-            """)
+            style_no_scripts_label(label)
             self.scripts_layout.addWidget(label)
-
         else:
-            max_time = max(t for _, t in scripts_with_times) or 1
+            max_time = max(t for _, t in scripts_with_times) if scripts_with_times else 1
+            if max_time == 0:
+                max_time = 1
             for name, time_sec in scripts_with_times:
                 hbox = QHBoxLayout()
                 hbox.setContentsMargins(0, 2, 0, 2)
@@ -351,7 +330,6 @@ class ScriptScopeMainWindow(QMainWindow):
 
                 label_name = QLabel(name)
                 style_script_label(label_name)
-                label_name.setToolTip(name)  # Tooltip au survol
                 hbox.addWidget(label_name)
 
                 bar = QProgressBar()
@@ -380,7 +358,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def time_to_seconds(time_str):
         """
         ================================================================================
-        Utility Function: Convert time string (hh:mm:ss or mm:ss) to seconds.
+        Convert time string (hh:mm:ss or mm:ss) to seconds.
         ================================================================================
         """
         parts = time_str.split(':')
@@ -394,7 +372,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def _safe_float(value):
         """
         ================================================================================
-        Utility Function: Safe float conversion.
+        Safe float conversion.
         ================================================================================
         """
         try:
@@ -406,7 +384,7 @@ class ScriptScopeMainWindow(QMainWindow):
     def _safe_div(num, denom):
         """
         ================================================================================
-        Utility Function: Safe division.
+        Safe division.
         ================================================================================
         """
         try:

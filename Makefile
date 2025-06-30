@@ -6,8 +6,10 @@ GUI_MAIN = gui/main.py
 test-scripts:
 	@chmod +x example/*.sh
 	@./example/cpu_stress.sh &
+	@sleep 4
 	@./example/mem_stress.sh &
 	@./example/io_stress.sh &
+	@sleep 3
 	@./example/sleep_script.sh &
 
 start: test-scripts

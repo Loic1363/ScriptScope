@@ -168,4 +168,11 @@ def style_script_progress_bar(bar):
         }
     """)
 
+def style_no_scripts_label(label):
+    label.setStyleSheet("""
+        color: #919ead;
+        border: none;
+        margin: 0;
+        padding: 0;
+    """)
 
