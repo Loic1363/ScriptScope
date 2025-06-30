@@ -172,10 +172,10 @@ class ScriptScopeMainWindow(QMainWindow):
 
                 self.scripts_bar_container = QWidget()
                 self.scripts_bar_layout = QVBoxLayout()
-                self.scripts_bar_layout.setContentsMargins(0, 0, 0, 200)
+                self.scripts_bar_layout.setContentsMargins(0, 0, 0, 150)
                 self.scripts_bar_layout.setSpacing(2)
                 self.scripts_bar_container.setLayout(self.scripts_bar_layout)
-                
+
                 vbox.addWidget(self.scripts_bar_container, alignment=Qt.AlignTop)
                 self.scripts_bar_container.setStyleSheet("border: none; background: transparent;")
 
@@ -309,7 +309,7 @@ class ScriptScopeMainWindow(QMainWindow):
                 max_time = 1
             for name, time_sec in scripts_with_times:
                 hbox = QHBoxLayout()
-                hbox.setContentsMargins(0, 2, 0, 2) #espace entre chaque barre
+                hbox.setContentsMargins(0, 8, 0, 8) #espace entre chaque barre
                 hbox.setSpacing(20) #taille de la barre
 
                 label_name = QLabel(name)
@@ -325,16 +325,33 @@ class ScriptScopeMainWindow(QMainWindow):
 
                 self.scripts_bar_layout.addLayout(hbox)
 
+        common_style = (
+            "color:#fff; "
+            "font-size:24px; "
+            "font-family:'Inter','Noto Sans',sans-serif; "
+            "font-weight:bold; "
+            "padding-left:8px; "
+            "padding-top:2px;"
+        )
+
         if hasattr(self, 'avg_time_label') and self.avg_time_label is not None:
             if scripts_with_times:
                 avg_time_ms = sum(t * 1000 for _, t in scripts_with_times) / len(scripts_with_times)
                 if avg_time_ms >= 10000:
-                    avg_time_str = f"{avg_time_ms / 1000:.1f}s"
+                    valeur = f"{avg_time_ms / 1000:.1f}"
+                    unite = "s"
                 else:
-                    avg_time_str = f"{avg_time_ms:.0f}ms"
-                self.avg_time_label.setText(f"Average time: {avg_time_str}")
+                    valeur = f"{avg_time_ms:.0f}"
+                    unite = "ms"
+                avg_time_str = (
+                    f'<span style="{common_style}">{valeur}</span>'
+                    f'<span style="{common_style} margin-left:4px;">{unite}</span>'
+                )
+                self.avg_time_label.setText(avg_time_str)
             else:
-                self.avg_time_label.setText("Average time: N/A")
+                self.avg_time_label.setText("N/A")
+
+
 
 
     def update_table(self, data):

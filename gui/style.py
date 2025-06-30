@@ -118,7 +118,7 @@ def style_overview_subtitle(label):
         border-radius: 8px;
         padding-top: 16px;
         padding-bottom: 16px;
-        padding-left: 1px;       
+        padding-left: 4px;       
         padding-right: 24px;    
         margin-bottom: 4px;
     """)
@@ -157,7 +157,7 @@ def style_script_label(label):
 def style_script_progress_bar(bar):
     bar.setStyleSheet("""
         QProgressBar {
-            border: 1px solid #3b4754;
+            border: none;
             border-radius: 4px;
             background: #1b2027;
             height: 12px;
